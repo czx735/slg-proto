@@ -22,7 +22,7 @@
 
 -include("proto.hrl").
 
--define(LOSTTIME, 5).
+-define(LOSTTIME, 3).
 
 %% 启动gen_server
 start_link(Socket) ->

@@ -20,7 +20,7 @@ heartbeat() ->
   lists:foreach(fun({undefined, Pid, worker, []}) ->
                     conn:heartbeat(Pid)
                 end, All),
-  timer:apply_after(5000, ?MODULE, heartbeat, []),
+  timer:apply_after(60000, ?MODULE, heartbeat, []),
   ok.
 
 
