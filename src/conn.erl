@@ -9,6 +9,7 @@
 
 -export([start_link/1,
          send/2,
+         heartbeat/1,
          stop/1]).
 
 %% 连接进程状态
@@ -21,6 +22,8 @@
 
 -include("proto.hrl").
 
+-define(LOSTTIME, 5).
+
 %% 启动gen_server
 start_link(Socket) ->
   gen_server:start_link(?MODULE, [Socket], []).
@@ -30,8 +33,8 @@ stop(Ref) ->
   gen_server:cast(Ref, stop).
 
 %% 检查连接的数据包
-heart_beat(Pid) -> 
-  gen_server:call(Pid, heart_beat).
+heartbeat(Pid) ->
+  gen_server:cast(Pid, heartbeat).
 
 init([Socket]) ->
   process_flag(trap_exit, true),
@@ -40,23 +43,23 @@ init([Socket]) ->
   erlang:put(socket, Socket),
   {ok, State}.
 
+%% 检查连接是否超时仍为有数据通信
+handle_cast(heartbeat, State=#state{socket=Socket,
+                                    recv_cnt=ReceiveBags,
+                                    keep_still_times=LostTimes}) ->
+  NowConnBags = inet:getstat(Socket, [recv_cnt]),
+  NewState = case ReceiveBags == NowConnBags of
+               true -> State#state{keep_still_times=LostTimes+1};
+               false -> State#state{recv_cnt=NowConnBags, keep_still_times=0}
+             end,
+  case LostTimes >= ?LOSTTIME of
+    true -> gen_tcp:close(Socket),
+            {stop, normal, NewState};
+    false -> {noreply, NewState}
+  end;
 handle_cast(Cast, State) ->
   State1 = conn_config:exec(cast, [Cast, State]),
   {noreply, State1}.
-
-%% 检查连接是否超时仍为有数据通信
-handle_call(heart_beat, _From, State = #state{socket = Socket,
-  recv_cnt = ReceiveBags, keep_still_times = LostTimes}) ->
-  NowConnBags = inet:getstat(Socket, [recv_cnt]),
-  case ReceiveBags == NowConnBags of
-    true -> NewSate = #state{socket = Socket, keep_still_times = LostTimes + 1};
-    false -> NewState = #state{socket = Socket, recv_cnt = NowConnBags, keep_still_times = 0}
-  end,
-  case LostTimes >= ?LOSTTIME of
-    true -> gen_tcp:close(Socket),
-      {stop, timeout, NewState};
-    false -> {noreply, NewState}
-  end.
 
 handle_call(Call, From, State) ->
   State1 = conn_config:exec(cast, [Call, From, State]),
@@ -101,6 +104,3 @@ send(TypeAtom, Paylod) ->
   Bin = proto_encoder:encode(TypeAtom, Paylod),
   gen_tcp:send(Socket, Bin),
   ok.
-
-  
-  

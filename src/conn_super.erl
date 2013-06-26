@@ -6,7 +6,7 @@
 -behaviour(supervisor).
 
 %% API
--export([init/1, start_player/1]).
+-export([init/1, start_player/1, heartbeat/0]).
 
 -define(MAX_RESTART, 5000000).
 -define(MAX_TIME, 60).
@@ -18,9 +18,10 @@ start_player(Port) ->
 heartbeat() ->
   All = supervisor:which_children(?MODULE),
   lists:foreach(fun({undefined, Pid, worker, []}) ->
-    conn:heart_beat(Pid) end, All), 
-  timer:apply_after(5000, io, format, ["~nHello World!~n", []]),
-  heartbeat().
+                    conn:heart_beat(Pid)
+                end, All),
+  timer:apply_after(5000, ?MODULE, heartbeat, []),
+  ok.
 
 
 init([]) ->

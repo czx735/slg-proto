@@ -42,7 +42,7 @@ code integer
 # sex 性别
 pt_ubase=
 name string
-sex string
+sex integer
 ===
 
 # 玩家设备信息

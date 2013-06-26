@@ -11,7 +11,7 @@
 
 start() ->
   {ok, Pid} = start_link("127.0.0.1", 4000),
-  ?MODULE:login(Pid, "xewfwe4", "few"),
+  ?MODULE:login(Pid, <<"xewfwe4">>, <<"few">>),
   ok.
 
 send(ApiType, Payload, Socket) ->
