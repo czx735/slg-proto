@@ -18,7 +18,7 @@ start_player(Port) ->
 heartbeat() ->
   All = supervisor:which_children(?MODULE),
   lists:foreach(fun({undefined, Pid, worker, []}) ->
-                    conn:heart_beat(Pid)
+                    conn:heartbeat(Pid)
                 end, All),
   timer:apply_after(5000, ?MODULE, heartbeat, []),
   ok.
