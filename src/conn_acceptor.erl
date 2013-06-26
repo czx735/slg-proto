@@ -25,7 +25,8 @@ start_acceptor(Parent) ->
 listen_port() ->
   Options = [binary, {packet, 0}, {reuseaddr, true},
              {backlog, 1024}, {active, false}],
-  gen_tcp:listen(4000, Options).
+  Port = slg_proto_conf:port(),
+  gen_tcp:listen(Port, Options).
 
 %% 监听循环.
 acceptor_loop(ListenSocket) ->

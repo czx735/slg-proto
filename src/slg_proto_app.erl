@@ -10,7 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    slg_proto_sup:start_link().
+  slg_proto_sup:start_link().
 
 stop(_State) ->
-    ok.
+  ok.

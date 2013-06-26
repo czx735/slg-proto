@@ -58,11 +58,11 @@ handle_cast(heartbeat, State=#state{socket=Socket,
     false -> {noreply, NewState}
   end;
 handle_cast(Cast, State) ->
-  State1 = conn_config:exec(cast, [Cast, State]),
+  State1 = exec(cast, [Cast, State]),
   {noreply, State1}.
 
 handle_call(Call, From, State) ->
-  State1 = conn_config:exec(cast, [Call, From, State]),
+  State1 = exec(cast, [Call, From, State]),
   {reply, ok, State1}.
 
 handle_info({tcp_closed, Socket}, State)
@@ -82,13 +82,13 @@ handle_info({tcp, Socket, Bin}, State) ->
   keep_alive_or_close(keep_alive, State);
 
 handle_info(Info, State) ->
-  conn_config:exec(info, [Info, State]),
+  exec(info, [Info, State]),
   {noreply, State}.
 
 code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
 terminate(Reason, State) ->
-  conn_config:exec(quit, [Reason, State]),
+  exec(quit, [Reason, State]),
   ok.
 
 keep_alive_or_close(Keep, State) ->
@@ -104,3 +104,12 @@ send(TypeAtom, Paylod) ->
   Bin = proto_encoder:encode(TypeAtom, Paylod),
   gen_tcp:send(Socket, Bin),
   ok.
+
+
+exec(Fun, Param) ->
+  Module = slg_proto_conf:callback(),
+  Export = Module:module_info(exports),
+  case lists:member({Fun, length(Param)}, Export) of
+    false -> do_nothing;
+    true -> apply(Module, Fun, Param)
+  end.
