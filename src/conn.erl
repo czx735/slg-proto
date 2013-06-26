@@ -108,8 +108,9 @@ send(TypeAtom, Paylod) ->
 
 exec(Fun, Param) ->
   Module = slg_proto_conf:callback(),
-  Export = Module:module_info(exports),
-  case lists:member({Fun, length(Param)}, Export) of
-    false -> do_nothing;
-    true -> apply(Module, Fun, Param)
-  end.
+  %% Export = Module:module_info(exports),
+  apply(Module, Fun, Param).
+  %% case lists:member({Fun, length(Param)}, Export) of
+  %%   false -> do_nothing;
+  %% true -> apply(Module, Fun, Param)
+  %% end.
