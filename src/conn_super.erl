@@ -6,7 +6,7 @@
 -behaviour(supervisor).
 
 %% API
--export([init/1, start_player/1, heartbeat/0]).
+-export([init/1, start_player/1, heartbeat/0, all_player/0]).
 
 -define(MAX_RESTART, 5000000).
 -define(MAX_TIME, 60).
@@ -23,6 +23,10 @@ heartbeat() ->
   timer:apply_after(60000, ?MODULE, heartbeat, []),
   ok.
 
+%% 返回所有的玩家进程列表
+all_player() ->
+  All = supervisor:which_children(?MODULE),
+  [Pid || {undefined, Pid, worker, []} <- All].
 
 init([]) ->
   {ok,
