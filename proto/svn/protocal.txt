@@ -72,7 +72,7 @@ db_user=
 id  pkid
 user_id pkid
 device_id pkid
-name string
+name  string
 level integer
 experience integer
 sex integer

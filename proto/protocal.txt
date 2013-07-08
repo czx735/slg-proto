@@ -73,7 +73,7 @@ db_user=
 id pkid $masked
 user_id pkid
 device_id pkid
-name string $default <<"this">>
+name string $masked
 level integer
 experience integer
 sex integer

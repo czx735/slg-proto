@@ -16,6 +16,5 @@ start(CallBack, Port) ->
   conn_super:heartbeat(),
   ok.
 
-
 start() ->
-  start(slg_proto, 3301).
+  start(slg_proto, 4000).
