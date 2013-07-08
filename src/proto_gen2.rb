@@ -214,13 +214,13 @@ end
 # 解码不认masked.
 def gen_indian_decode(file, proto)
   proto_name = proto["name"].caplize
-  c = "<" + "<Data/binary>>"
+  c = "<" + "<ADataNameW/binary>>"
   file.write("decode_#{proto["name"]}(#{c}) ->\n")
   list = []
   left_data = ""
   proto["items"].each_with_index do |i, index|
     if index == 0
-      bin_data = "Data"
+      bin_data = "ADataNameW"
     else
       bin_data = left_data
     end
@@ -284,13 +284,13 @@ def gen_decoder(api_list)
   file.write("-include(\"proto_record.hrl\").\n\n\n")
   api_list.each_with_index do |api, index|
     file.write("%% #{api["desc"]}\n")
-    file.write("decode(#{api["name"]}, Data) ->\n")
-    file.write("  proto_payload:decode_#{api["payload"]}(Data);\n\n")
-    file.write("decode(#{api["packet_type"]}, Data) ->\n")
+    file.write("decode(#{api["name"]}, ADataNameW) ->\n")
+    file.write("  proto_payload:decode_#{api["payload"]}(ADataNameW);\n\n")
+    file.write("decode(#{api["packet_type"]}, ADataNameW) ->\n")
     if index == api_list.length-1
-      file.write("  proto_payload:decode_#{api["payload"]}(Data).\n\n")
+      file.write("  proto_payload:decode_#{api["payload"]}(ADataNameW).\n\n")
     else
-      file.write("  proto_payload:decode_#{api["payload"]}(Data);\n\n")
+      file.write("  proto_payload:decode_#{api["payload"]}(ADataNameW);\n\n")
     end
   end
 end
