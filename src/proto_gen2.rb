@@ -318,8 +318,10 @@ def gen_api_key(api_list)
   file.write("-export([key/1]).\n\n")
   api_list.each_with_index do |x, index|
     if index == api_list.length - 1
+      file.write("key(#{x["packet_type"]}) -> #{x["name"]};\n")
       file.write("key(#{x["name"]}) -> #{x["packet_type"]}.\n")
     else
+      file.write("key(#{x["packet_type"]}) -> #{x["name"]};\n")
       file.write("key(#{x["name"]}) -> #{x["packet_type"]};\n")
     end
   end
